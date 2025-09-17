@@ -1,0 +1,240 @@
+Of course. Here is a comprehensive guide for a frontend developer to build the School Payments and Dashboard application.
+
+This document is completely standalone and contains all the necessary information, from project setup to detailed API specifications and feature requirements, tailored specifically for the frontend development process.
+
+You can save this as `FRONTEND_DEVELOPMENT_GUIDE.md`.
+
+````markdown
+# Frontend Development Guide v1.0
+## School Payment and Dashboard Application
+
+**Version:** 1.0.0
+**Last Updated:** 2025-09-17
+
+---
+
+### 1. Overview
+This document provides a complete guide for frontend developers building the user interface for the School Payment and Dashboard application. The goal is to create a responsive, user-friendly interface using React that interacts with the backend REST API to manage and display payment transaction data.
+
+---
+
+### 2. Technology Stack & Project Setup
+
+* **Framework**: React.js (using Vite or Create React App)
+* **Styling**: Tailwind CSS (or a preferred CSS framework like Material-UI)
+* **API Communication**: Axios
+* **Routing**: React Router
+
+**Project Setup Steps:**
+1.  **Initialize React Project**:
+    ```bash
+    # Using Vite
+    npm create vite@latest school-payments-frontend -- --template react
+    cd school-payments-frontend
+    ```
+2.  **Install Dependencies**:
+    ```bash
+    npm install axios react-router-dom tailwindcss postcss autoprefixer
+    ```
+3.  **Initialize Tailwind CSS**:
+    ```bash
+    npx tailwindcss init -p
+    ```
+    Follow the official Tailwind CSS guide to configure your `tailwind.config.js` and `index.css` files.
+
+4.  **Environment Variables**:
+    Create a `.env` file in the project root to store the backend API's base URL.
+    ```
+    VITE_API_BASE_URL=http://localhost:8000/api
+    ```
+
+---
+
+### 3. Core Concepts
+
+#### 3.1. Authentication Flow
+The application uses JWT (JSON Web Tokens) for securing API endpoints.
+1.  **Login**: The user enters their credentials on the Login page. These are sent to the `POST /auth/login` endpoint.
+2.  **Token Storage**: Upon successful login, the API returns a JWT. This token **must** be stored securely in the browser (e.g., in `localStorage` or `sessionStorage`).
+3.  **Authenticated Requests**: For all subsequent API calls to protected endpoints, the JWT must be included in the `Authorization` header.
+    * **Header Format**: `Authorization: Bearer <your_jwt_token>`
+4.  **Logout**: To log out, simply remove the JWT from storage and redirect the user to the login page.
+
+#### 3.2. Centralized API Service (Axios)
+It is highly recommended to create a centralized Axios instance that automatically attaches the JWT to every request.
+
+**Example (`/api/axiosConfig.js`):**
+```javascript
+import axios from 'axios';
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+});
+
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+export default apiClient;
+````
+
+-----
+
+### 4\. Page & Feature Breakdown
+
+#### 4.1. Login Page
+
+  * **Route**: `/login`
+  * **Functionality**: A simple form with "Username" and "Password" fields. On submission, it calls the `POST /auth/login` API endpoint. On success, it stores the token and redirects the user to the dashboard (`/`).
+
+#### 4.2. Transactions Overview (Dashboard)
+
+  * **Route**: `/`
+  * **Functionality**: This is the main page for displaying all transaction data in a paginated table.
+  * **UI Components**:
+      * **Filters**:
+          * A multi-select dropdown for `status` (e.g., "Success", "Pending", "Failed").
+          * A multi-select dropdown or searchable input for `school_id`.
+          * Date range pickers for `startDate` and `endDate`.
+      * **Table**:
+          * Displays transaction data with the specified columns.
+          * **Columns**: `collect_id`, `school_id`, `gateway`, `order_amount`, `transaction_amount`, `status`, `custom_order_id`.
+          * Column headers should be sortable (ascending/descending).
+          * **Hover Effect**: Implement a hover effect on table rows similar to the one shown in the provided video reference.
+      * **Pagination**: Controls for navigating between pages of data.
+  * **State Management & URL Persistence**:
+      * All filter, sort, and pagination states **must** be persisted in the URL's query parameters.
+      * Example URL: `/?status=success&status=pending&sortBy=amount&order=desc&page=2`
+      * This allows users to share links to specific views and maintains the state on page reload. Use React Router's `useSearchParams` hook for this.
+
+#### 4.3. Transaction Details by School
+
+  * **Route**: `/school/:schoolId`
+  * **Functionality**: Displays a filtered view of the transaction table for a single school.
+  * **UI Components**:
+      * A search bar or dropdown to select a different `school_id`.
+      * Reuse the same transaction table component from the main dashboard.
+  * **Data Fetching**: The `schoolId` should be extracted from the URL parameters (`useParams` hook) and used to call the `GET /transactions/school/:schoolId` endpoint.
+
+#### 4.4. Transaction Status Check
+
+  * **Functionality**: Allows a user to manually check the status of a transaction. This can be a dedicated page or a modal.
+  * **UI Components**:
+      * An input field for the user to enter a `custom_order_id` (which is the `collect_id`).
+      * A "Check Status" button.
+  * **Data Fetching**: On button click, call the `GET /transaction-status/:custom_order_id` API and display the returned status.
+
+-----
+
+### 5\. Backend API Reference for Frontend
+
+**Base URL**: `http://<your-hosted-backend-url>/api`
+
+#### **Authentication**
+
+  * **Login**
+      * **Endpoint**: `POST /auth/login`
+      * **Body**: `{ "username": "...", "password": "..." }`
+      * **Success Response (200)**: `{ "token": "jwt.token.string" }`
+
+#### **Transactions**
+
+  * **Fetch All Transactions**
+
+      * **Endpoint**: `GET /transactions`
+      * **Protection**: JWT Required
+      * **Query Params**:
+          * `page` (Number)
+          * `limit` (Number)
+          * `sortBy` (String: e.g., `payment_time`)
+          * `order` (String: `asc` or `desc`)
+          * `status` (String, can be repeated: `?status=success&status=pending`)
+          * `schoolId` (String, can be repeated)
+          * `startDate`, `endDate` (String, ISO 8601 format: `YYYY-MM-DD`)
+      * **Success Response (200)**:
+        ```json
+        {
+          "data": [
+            {
+              "collect_id": "...",
+              "school_id": "...",
+              "gateway": "PhonePe",
+              "order_amount": 2000,
+              "transaction_amount": 2200,
+              "status": "success",
+              "custom_order_id": "..."
+            }
+          ],
+          "pagination": {
+            "currentPage": 1,
+            "totalPages": 10,
+            "totalItems": 100
+          }
+        }
+        ```
+
+  * **Fetch Transactions by School**
+
+      * **Endpoint**: `GET /transactions/school/:schoolId`
+      * **Protection**: JWT Required
+      * **Success Response (200)**: Same structure as "Fetch All Transactions".
+
+  * **Check Transaction Status**
+
+      * **Endpoint**: `GET /transaction-status/:custom_order_id`
+      * **Protection**: JWT Required
+      * **Success Response (200)**:
+        ```json
+        {
+          "status": "success"
+        }
+        ```
+
+-----
+
+### 6\. Frontend Task Tracker
+
+  * `[]` **Module 1: Project Foundation & Setup**
+
+      * `[]` Initialize React project using Vite.
+      * `[]` Install all required dependencies (`axios`, `react-router-dom`, `tailwindcss`).
+      * `[]` Configure Tailwind CSS.
+      * `[]` Set up project folder structure (`/pages`, `/components`, `/api`).
+      * `[]` Create the centralized Axios instance.
+
+  * `[]` **Module 2: Core Layout and Routing**
+
+      * `[]` Set up React Router with routes for Login, Dashboard, and School Details.
+      * `[]` Create a `ProtectedRoute` component to handle authentication logic.
+
+  * `[]` **Module 3: Feature Implementation**
+
+      * `[]` Build the Login page and implement the login API call.
+      * `[]` Build the main Transaction Overview dashboard.
+          * `[]` Create the reusable `TransactionTable` component.
+          * `[]` Implement the table row hover effect.
+          * `[]` Create filter components (status, school, date).
+          * `[]` Create the `Pagination` component.
+          * `[]` Integrate the `/transactions` API call.
+          * `[]` Implement URL state persistence for all filters, sorting, and pagination.
+      * `[]` Build the "Transaction Details by School" page.
+      * `[]` Build the "Transaction Status Check" page or modal.
+
+  * `[]` **Module 4: Final Polish & Deployment**
+
+      * `[]` Ensure the application is fully responsive.
+      * `[]` Add loading indicators and error handling for all API calls.
+      * `[]` (Optional) Implement Dark Mode.
+      * `[]` Write a comprehensive `README.md` file for the frontend project.
+      * `[]` Deploy the application to a service like Vercel or Netlify.
+
+<!-- end list -->
+
+```
+```
