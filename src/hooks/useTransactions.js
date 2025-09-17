@@ -52,12 +52,22 @@ export const useTransactions = () => {
     });
   };
 
+  const changeLimit = (limit) => {
+    setSearchParams(prev => {
+      const updated = new URLSearchParams(prev);
+      updated.set('limit', limit.toString());
+      updated.set('page', '1'); // Reset to first page on limit change
+      return updated;
+    });
+  };
+
   return { 
     transactions, 
     pagination, 
     loading, 
     updateFilters, 
     changePage,
+    changeLimit,
     fetchTransactions 
   };
 };

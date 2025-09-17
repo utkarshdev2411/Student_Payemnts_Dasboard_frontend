@@ -21,21 +21,21 @@ const TransactionFilters = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <div className="flex flex-wrap items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-gray-900">Filter Transactions</h3>
+    <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+      <div className="flex flex-wrap items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-gray-900">Filter Transactions</h3>
         <button
           onClick={clearFilters}
-          className="text-sm text-gray-500 hover:text-gray-700 underline"
+          className="text-sm text-gray-600 hover:text-gray-900 underline font-medium transition-colors duration-200"
         >
           Clear Filters
         </button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {/* Status Filter */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
             Status
           </label>
           <select
@@ -43,7 +43,7 @@ const TransactionFilters = ({ onFilterChange }) => {
             id="status"
             value={searchParams.get('status') || ''}
             onChange={handleInputChange}
-            className="w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            className="w-full pl-3 pr-10 py-2.5 text-sm border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 rounded-lg transition-colors duration-200"
           >
             <option value="">All Status</option>
             <option value="success">Success</option>
@@ -54,8 +54,8 @@ const TransactionFilters = ({ onFilterChange }) => {
 
         {/* School ID Filter */}
         <div>
-          <label htmlFor="schoolId" className="block text-sm font-medium text-gray-700 mb-1">
-            School ID
+          <label htmlFor="schoolId" className="block text-sm font-medium text-gray-700 mb-2">
+            Institute ID
           </label>
           <input
             type="text"
@@ -63,14 +63,14 @@ const TransactionFilters = ({ onFilterChange }) => {
             id="schoolId"
             value={searchParams.get('schoolId') || ''}
             onChange={handleInputChange}
-            placeholder="Enter School ID"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="Enter Institute ID"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-sm transition-colors duration-200"
           />
         </div>
 
         {/* Start Date Filter */}
         <div>
-          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
             Start Date
           </label>
           <input
@@ -79,13 +79,13 @@ const TransactionFilters = ({ onFilterChange }) => {
             id="startDate"
             value={searchParams.get('startDate') || ''}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-sm transition-colors duration-200"
           />
         </div>
 
         {/* End Date Filter */}
         <div>
-          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
             End Date
           </label>
           <input
@@ -94,13 +94,13 @@ const TransactionFilters = ({ onFilterChange }) => {
             id="endDate"
             value={searchParams.get('endDate') || ''}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-sm transition-colors duration-200"
           />
         </div>
 
         {/* Sort By Filter */}
         <div>
-          <label htmlFor="sortBy" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="sortBy" className="block text-sm font-medium text-gray-700 mb-2">
             Sort By
           </label>
           <select
@@ -108,7 +108,7 @@ const TransactionFilters = ({ onFilterChange }) => {
             id="sortBy"
             value={searchParams.get('sortBy') || 'payment_time'}
             onChange={handleInputChange}
-            className="w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            className="w-full pl-3 pr-10 py-2.5 text-sm border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 rounded-lg transition-colors duration-200"
           >
             <option value="payment_time">Payment Time</option>
             <option value="order_amount">Order Amount</option>
@@ -119,7 +119,7 @@ const TransactionFilters = ({ onFilterChange }) => {
 
         {/* Sort Order Filter */}
         <div>
-          <label htmlFor="order" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="order" className="block text-sm font-medium text-gray-700 mb-2">
             Order
           </label>
           <select
@@ -127,7 +127,7 @@ const TransactionFilters = ({ onFilterChange }) => {
             id="order"
             value={searchParams.get('order') || 'desc'}
             onChange={handleInputChange}
-            className="w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            className="w-full pl-3 pr-10 py-2.5 text-sm border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 rounded-lg transition-colors duration-200"
           >
             <option value="desc">Descending</option>
             <option value="asc">Ascending</option>
