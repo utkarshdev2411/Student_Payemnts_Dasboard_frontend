@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useReducer, useEffect, useCallback } from 'react';
 import { authAPI } from '../api/endpoints';
 
 // Initial state
@@ -118,7 +118,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Login function
-  const login = async (credentials) => {
+  const login = useCallback(async (credentials) => {
     try {
       dispatch({ type: AUTH_TYPES.LOGIN_START });
       
@@ -136,7 +136,7 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      return { success: true };
+      return { success: true, user: response.user };
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Login failed';
       dispatch({
@@ -145,16 +145,37 @@ export const AuthProvider = ({ children }) => {
       });
       return { success: false, error: errorMessage };
     }
-  };
+  }, []);
 
   // Register function
-  const register = async (userData) => {
+  const register = useCallback(async (userData) => {
     try {
       dispatch({ type: AUTH_TYPES.REGISTER_START });
       
-      await authAPI.register(userData);
+      const response = await authAPI.register(userData);
       
-      dispatch({ type: AUTH_TYPES.REGISTER_SUCCESS });
+      // Auto-login after successful registration
+      // If the registration response includes a token, use it
+      if (response.token && response.user) {
+        // Store token and user data
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        
+        dispatch({
+          type: AUTH_TYPES.LOGIN_SUCCESS,
+          payload: {
+            token: response.token,
+            user: response.user,
+          },
+        });
+      } else {
+        // If no token returned, auto-login with the same credentials
+        const loginResult = await login(userData);
+        if (!loginResult.success) {
+          // If auto-login fails, still mark registration as successful
+          dispatch({ type: AUTH_TYPES.REGISTER_SUCCESS });
+        }
+      }
       
       return { success: true };
     } catch (error) {
@@ -165,19 +186,19 @@ export const AuthProvider = ({ children }) => {
       });
       return { success: false, error: errorMessage };
     }
-  };
+  }, [login]);
 
   // Logout function
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     dispatch({ type: AUTH_TYPES.LOGOUT });
-  };
+  }, []);
 
   // Clear error function
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatch({ type: AUTH_TYPES.CLEAR_ERROR });
-  };
+  }, []);
 
   const value = {
     ...state,
@@ -192,15 +213,6 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-// Custom hook to use auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
 
 export default AuthContext;

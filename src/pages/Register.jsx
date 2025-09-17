@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotification } from '../hooks/useNotification';
 
 // Validation schema
 const registerSchema = Joi.object({
@@ -37,6 +38,7 @@ const registerSchema = Joi.object({
 const Register = () => {
   const navigate = useNavigate();
   const { register: registerUser, isAuthenticated, error, clearError } = useAuth();
+  const { showSuccess, showError } = useNotification();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -80,12 +82,17 @@ const Register = () => {
     if (result.success) {
       setSuccess(true);
       reset();
-      // Redirect to login after 2 seconds
+      
+      // Show success notification with welcome message
+      showSuccess(`Registration Successful! Welcome ${userData.username}!`, 4000);
+      
+      // Add a small delay to show success message, then navigate
       setTimeout(() => {
-        navigate('/login', { 
-          state: { message: 'Registration successful! Please log in.' }
-        });
-      }, 2000);
+        navigate('/', { replace: true });
+      }, 1000);
+    } else {
+      // Show error notification
+      showError(result.error || 'Registration failed. Please try again.', 5000);
     }
   };
 
@@ -175,7 +182,7 @@ const Register = () => {
           {success && (
             <div className="bg-green-50 border border-green-200 rounded-md p-3">
               <p className="text-sm text-green-600">
-                Registration successful! Redirecting to login...
+                Registration successful! Logging you in...
               </p>
             </div>
           )}

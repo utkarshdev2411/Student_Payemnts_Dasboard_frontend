@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotification } from '../hooks/useNotification';
 
 // Validation schema
 const loginSchema = Joi.object({
@@ -29,6 +30,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login, isAuthenticated, error, clearError } = useAuth();
+  const { showSuccess, showError } = useNotification();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -64,8 +66,15 @@ const Login = () => {
     setIsSubmitting(false);
     
     if (result.success) {
+      // Show success notification with user welcome message
+      showSuccess(`Logged In. Welcome Back ${result.user?.username || 'User'}!`, 4000);
+      
+      // Double navigation for reliability - both through useEffect and direct
       const from = location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
+    } else {
+      // Show error notification
+      showError(result.error || 'Login failed. Please try again.', 5000);
     }
   };
 

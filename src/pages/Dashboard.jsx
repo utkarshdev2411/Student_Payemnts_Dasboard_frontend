@@ -1,11 +1,19 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotification } from '../hooks/useNotification';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const { showSuccess } = useNotification();
 
   const handleLogout = () => {
-    logout();
+    // Show logout notification
+    showSuccess(`Goodbye ${user?.username}! You have been logged out.`, 3000);
+    
+    // Small delay to show the notification before logout
+    setTimeout(() => {
+      logout();
+    }, 500);
   };
 
   return (
