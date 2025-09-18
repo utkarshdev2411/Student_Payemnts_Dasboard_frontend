@@ -3,10 +3,9 @@ import { useAuth } from '../hooks/useAuth';
 import { useNotification } from '../hooks/useNotification';
 import { useTransactions } from '../hooks/useTransactions';
 import TransactionTable from '../components/TransactionTable';
-import TransactionFilters from '../components/TransactionFilters';
+import FilterBar from '../components/FilterBar';
 import Pagination from '../components/Pagination';
 import CreatePaymentModal from '../components/CreatePaymentModal';
-import CheckStatusModal from '../components/CheckStatusModal';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -15,7 +14,6 @@ const Dashboard = () => {
   
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
   const handleLogout = () => {
     showSuccess(`Goodbye ${user?.username}! You have been logged out.`, 3000);
@@ -62,16 +60,6 @@ const Dashboard = () => {
               </button>
               
               <button
-                onClick={() => setIsStatusModalOpen(true)}
-                className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center shadow-sm"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Check Status
-              </button>
-              
-              <button
                 onClick={handleLogout}
                 className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-sm"
               >
@@ -86,7 +74,7 @@ const Dashboard = () => {
       <main className="w-[85%] mx-auto py-8 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {/* Filters */}
-          <TransactionFilters onFilterChange={updateFilters} />
+          <FilterBar onFilterChange={updateFilters} />
           
           {/* Transaction Table */}
           <TransactionTable transactions={transactions} loading={loading} />
@@ -101,11 +89,6 @@ const Dashboard = () => {
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={handlePaymentSuccess}
-      />
-      
-      <CheckStatusModal 
-        isOpen={isStatusModalOpen} 
-        onClose={() => setIsStatusModalOpen(false)}
       />
     </div>
   );

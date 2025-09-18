@@ -1,3 +1,6 @@
 @import "tailwindcss";
 
+/* Import custom animations */
+@import "./styles/animations.css";
+
 /* Custom styles can be added below */
