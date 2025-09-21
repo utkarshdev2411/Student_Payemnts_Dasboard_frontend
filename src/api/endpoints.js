@@ -39,6 +39,7 @@ export const transactionAPI = {
 // Payment API calls
 export const paymentAPI = {
   createPayment: async (paymentData) => {
+    console.log('Creating payment with data:', paymentData);
     const response = await apiClient.post('/payments/create-payment', paymentData);
     return response.data;
   },

@@ -42,8 +42,23 @@ const TransactionTable = ({ transactions, loading }) => {
     return amount ? `₹${parseFloat(amount).toFixed(2)}` : 'N/A';
   };
 
-  const formatDate = (dateString) => {
-    return dateString ? new Date(dateString).toLocaleString() : 'N/A';
+  const formatDate = (dateString, fallbackDate) => {
+    const date = dateString || fallbackDate;
+    if (!date) return 'N/A';
+    
+    try {
+      const d = new Date(date);
+      return d.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return 'N/A';
+    }
   };
 
   if (loading) {
@@ -105,7 +120,7 @@ const TransactionTable = ({ transactions, loading }) => {
                 
                 {/* Date & Time */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {formatDate(tx.payment_time)}
+                  {formatDate(tx.payment_time, tx.order_created_at)}
                 </td>
                 
                 {/* Order Amount */}
@@ -139,7 +154,14 @@ const TransactionTable = ({ transactions, loading }) => {
                 
                 {/* Payment Method */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {tx.gateway_name}
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {tx.payment_mode ? 
+                      (tx.payment_mode === 'card' ? 'Card' :
+                       tx.payment_mode === 'upi' ? 'UPI' :
+                       tx.payment_mode === 'netbanking' ? 'Net Banking' :
+                       tx.payment_mode === 'wallet' ? 'Wallet' : tx.payment_mode.toUpperCase()) 
+                      : (tx.gateway_name || 'Pending')}
+                  </span>
                 </td>
                 
                 {/* Student Name */}
