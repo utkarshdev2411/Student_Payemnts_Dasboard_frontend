@@ -18,12 +18,12 @@ const Dashboard = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  // Auto-refresh transactions every 10 seconds to catch status updates during development
+  // Auto-refresh transactions every 1 minute to catch status updates
   useEffect(() => {
     const interval = setInterval(() => {
       fetchTransactions();
       setLastUpdated(new Date());
-    }, 10000); // 10 seconds for faster development feedback
+    }, 60000); // 1 minute refresh interval
 
     return () => clearInterval(interval);
   }, [fetchTransactions]);
@@ -134,7 +134,7 @@ const Dashboard = () => {
             </span>
             <span className="flex items-center">
               <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-              Auto-refreshing every 10 seconds
+              Auto-refreshing every 1 minute
             </span>
           </div>
           
