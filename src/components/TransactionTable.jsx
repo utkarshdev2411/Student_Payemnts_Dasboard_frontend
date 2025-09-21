@@ -107,7 +107,7 @@ const TransactionTable = ({ transactions, loading }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
             {transactions.map((tx, index) => (
-              <tr key={tx.collect_id} className="hover:bg-gray-50 transition-colors duration-150">
+              <tr key={tx.collect_id} className="hover:bg-gray-100 hover:shadow-md transition-shadow duration-200">
                 {/* Sr. No */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {index + 1}

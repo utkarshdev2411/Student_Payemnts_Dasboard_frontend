@@ -6,6 +6,7 @@ import TransactionTable from '../components/TransactionTable';
 import FilterBar from '../components/FilterBar';
 import Pagination from '../components/Pagination';
 import CreatePaymentModal from '../components/CreatePaymentModal';
+import DashboardStats from '../components/DashboardStats';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -111,6 +112,14 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="w-[85%] mx-auto py-8 sm:px-6 lg:px-8">
         <div className="space-y-6">
+          {/* Dashboard Overview Section */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              
+            </div>
+            <DashboardStats />
+          </div>
+          
           {/* Filters */}
           <FilterBar onFilterChange={updateFilters} />
           
