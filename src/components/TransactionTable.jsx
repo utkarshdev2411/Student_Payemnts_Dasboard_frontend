@@ -154,7 +154,7 @@ const TransactionTable = ({ transactions, loading }) => {
                 
                 {/* Payment Method */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  text-blue-800">
                     {tx.payment_mode ? 
                       (tx.payment_mode === 'card' ? 'Card' :
                        tx.payment_mode === 'upi' ? 'UPI' :
